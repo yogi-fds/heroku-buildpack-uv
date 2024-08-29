@@ -12,6 +12,7 @@ function indent() {
 
 export BUILD_DIR="$1"
 export ENV_DIR="$3"
+export UV_LINK_MODE=copy  # Default to copy mode (shows a warning otherwise)
 
 REQUIREMENTS_FILE="requirements.txt"
 REQUIREMENTS_TEST_FILE="requirements-test.txt"
