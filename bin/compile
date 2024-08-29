@@ -38,19 +38,19 @@ else
 fi
 
 log "Install uv"
-curl -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" | sh | indent
+curl -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" | sh 2>&1 | indent
 
 # Make the uv commands available
 source "$HOME/.cargo/env"
 
 log "Sync environment to uv.lock (without dev dependencies)"
-uv sync --no-dev --frozen | indent
+uv sync --no-dev --frozen 2>&1 | indent
 
 log "Export $REQUIREMENTS_FILE from uv"
 uv pip freeze --strict > "$REQUIREMENTS_FILE"
 
 log "Sync environment to uv.lock (with dev dependencies)"
-uv sync --frozen | indent
+uv sync --frozen 2>&1 | indent
 
 log "Export $REQUIREMENTS_TEST_FILE from uv (for Heroku CI)"
 uv pip freeze --strict > "$REQUIREMENTS_TEST_FILE"
@@ -69,4 +69,4 @@ log "Deleting uv virtualenv at $VENV"
 rm -rf "$VENV"
 
 log "Uninstalling uv-managed Python versions"
-uv python uninstall --all | indent
+uv python uninstall --all 2>&1 | indent
