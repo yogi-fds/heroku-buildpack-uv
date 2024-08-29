@@ -11,8 +11,15 @@ function indent() {
 }
 
 export BUILD_DIR="$1"
+export CACHE_DIR="$2"
 export ENV_DIR="$3"
+
 export UV_LINK_MODE=copy  # Default to copy mode (shows a warning otherwise)
+export UV_CACHE_DIR="$CACHE_DIR"
+
+# Make sure the CACHE_DIR exists
+# https://devcenter.heroku.com/articles/buildpack-api#caching
+mkdir -p "$CACHE_DIR"
 
 REQUIREMENTS_FILE="requirements.txt"
 REQUIREMENTS_TEST_FILE="requirements-test.txt"
