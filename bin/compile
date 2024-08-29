@@ -39,6 +39,9 @@ fi
 log "Install uv"
 curl -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" | sh | indent
 
+# Make the uv commands available
+source "$HOME/.cargo/env"
+
 log "Sync environment to uv.lock (without dev dependencies)"
 uv sync --no-dev --locked --frozen | indent
 
