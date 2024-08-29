@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function log() {
+    echo "-----> $*"
+}
+
+function indent() {
+    sed -e 's/^/       /'
+}
+
+export BUILD_DIR="$1"
+export ENV_DIR="$3"
+
+REQUIREMENTS_FILE="requirements.txt"
+REQUIREMENTS_TEST_FILE="requirements-test.txt"
+RUNTIME_FILE="runtime.txt"
+VENV=".venv"
+
+shopt -s nullglob
+
+# Run the rest of the script from the build directory
+cd "$BUILD_DIR"
+
+# Set any UV_ environment variables
+# https://docs.astral.sh/uv/configuration/environment/
+for env_file in "$ENV_DIR"/UV_* ; do
+    export "$(basename "$env_file")=$(cat "$env_file" 2>/dev/null)"
+done
+
+if [ -z "${UV_VERSION:-}" ] ; then
+    export UV_VERSION=0.4.0
+    log "No uv version specified in UV_VERSION config var. Defaulting to $UV_VERSION."
+else
+    log "Using uv version from UV_VERSION config var: $UV_VERSION"
+fi
+
+log "Install uv"
+curl -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" | sh | indent
+
+log "Sync environment to uv.lock (without dev dependencies)"
+uv sync --no-dev --locked --frozen | indent
+
+log "Export $REQUIREMENTS_FILE from uv"
+uv pip freeze --strict > "$REQUIREMENTS_FILE"
+
+log "Sync environment to uv.lock (with dev dependencies)"
+uv sync --locked --frozen | indent
+
+log "Export $REQUIREMENTS_TEST_FILE from uv (for Heroku CI)"
+uv pip freeze --strict > "$REQUIREMENTS_TEST_FILE"
+
+if [ -f "$RUNTIME_FILE" ] ; then
+    log "$RUNTIME_FILE found, skipping $RUNTIME_FILE generation" >&2
+    exit 0
+else
+    log "Generating $RUNTIME_FILE from uv Python version"
+    PYTHON_VERSION_OUTPUT=$(uv run python --version)
+    echo "${PYTHON_VERSION_OUTPUT//Python /python-}" > "$RUNTIME_FILE"
+fi
+
+log "Deleting uv virtualenv at $VENV"
+rm -rf "$VENV"
+
+log "Uninstalling uv-managed Python versions"
+uv uninstall --all | indent

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+BUILD_DIR="$1"
+
+if [ -f "$BUILD_DIR/uv.lock" ] ; then
+    echo "uv"
+    exit 0
+else
+    exit 1
+fi
