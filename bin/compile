@@ -44,7 +44,7 @@ curl -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" | sh 2>&1 | indent
 source "$HOME/.cargo/env"
 
 log "Sync environment to uv.lock (without dev dependencies)"
-uv sync --no-dev --frozen 2>&1 | indent
+uv sync --python-preference only-managed --no-dev --frozen 2>&1 | indent
 
 log "Export $REQUIREMENTS_FILE from uv"
 uv pip freeze --strict > "$REQUIREMENTS_FILE"
