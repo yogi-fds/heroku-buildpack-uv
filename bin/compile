@@ -43,8 +43,13 @@ curl -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" | sh 2>&1 | indent
 # Make the uv commands available
 source "$HOME/.cargo/env"
 
+# Install a Python version with uv so we get more
+# recent releases by default
+log "Install uv Python version"
+uv python install 2>&1 | indent
+
 log "Sync environment to uv.lock (without dev dependencies)"
-uv sync --python-preference only-managed --no-dev --frozen 2>&1 | indent
+uv sync --no-dev --frozen 2>&1 | indent
 
 log "Export $REQUIREMENTS_FILE from uv"
 uv pip freeze --strict > "$REQUIREMENTS_FILE"
@@ -62,7 +67,7 @@ else
     log "Generating $RUNTIME_FILE from uv Python version"
     PYTHON_VERSION_OUTPUT=$(uv run python --version)
     echo "${PYTHON_VERSION_OUTPUT//Python /python-}" > "$RUNTIME_FILE"
-    cat "$RUNTIME_FILE"
+    cat "$RUNTIME_FILE" | indent
 fi
 
 log "Deleting uv virtualenv at $VENV"
