@@ -43,13 +43,13 @@ curl -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" | sh | indent
 source "$HOME/.cargo/env"
 
 log "Sync environment to uv.lock (without dev dependencies)"
-uv sync --no-dev --locked --frozen | indent
+uv sync --no-dev --frozen | indent
 
 log "Export $REQUIREMENTS_FILE from uv"
 uv pip freeze --strict > "$REQUIREMENTS_FILE"
 
 log "Sync environment to uv.lock (with dev dependencies)"
-uv sync --locked --frozen | indent
+uv sync --frozen | indent
 
 log "Export $REQUIREMENTS_TEST_FILE from uv (for Heroku CI)"
 uv pip freeze --strict > "$REQUIREMENTS_TEST_FILE"
