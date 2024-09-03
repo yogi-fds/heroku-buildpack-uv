@@ -9,4 +9,3 @@ dependencies:
         act: |
           UV_LATEST=$(curl -s https://api.github.com/repos/astral-sh/uv/releases/latest | jq -r '.tag_name')
           sed -i "s/UV_VERSION=.*/UV_VERSION=$UV_LATEST/" bin/compile
-          find test/fixtures -type f -exec sed -i "s/Defaulting to [0-9.]\+/Defaulting to $UV_LATEST./" {} +
