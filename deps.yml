@@ -3,7 +3,7 @@ dependencies:
 - type: manual
   settings:
     deps:
-      poetry-version:
+      uv-version:
         collect: |
           grep 'UV_VERSION=' bin/compile | cut -d '=' -f 2
         act: |
