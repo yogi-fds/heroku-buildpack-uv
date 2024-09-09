@@ -50,6 +50,11 @@ curl -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" | sh 2>&1 | indent
 # Make the uv commands available
 source "$HOME/.cargo/env"
 
+# Install a Python version with uv so we get more
+# recent releases by default
+log "Install uv Python version"
+uv python install 2>&1 | indent
+
 log "Export $REQUIREMENTS_FILE from uv"
 uv export --output-file "$REQUIREMENTS_FILE" --no-dev --frozen | indent
 
@@ -60,16 +65,11 @@ if [ -f "$RUNTIME_FILE" ] ; then
     log "$RUNTIME_FILE found, skipping $RUNTIME_FILE generation" >&2
     exit 0
 else
-    # Install a Python version with uv so we get more
-    # recent releases by default
-    log "Install uv Python version"
-    uv python install 2>&1 | indent
-
     log "Generating $RUNTIME_FILE from uv Python version"
     PYTHON_VERSION_OUTPUT=$(uv run python --version)
     echo "${PYTHON_VERSION_OUTPUT//Python /python-}" > "$RUNTIME_FILE"
     cat "$RUNTIME_FILE" | indent
-
-    log "Uninstalling uv-managed Python versions"
-    uv python uninstall --all 2>&1 | indent
 fi
+
+log "Uninstalling uv-managed Python versions"
+uv python uninstall --all 2>&1 | indent
