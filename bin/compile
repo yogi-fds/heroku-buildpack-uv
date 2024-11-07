@@ -69,4 +69,4 @@ else
 fi
 
 log "Uninstalling uv-managed Python versions"
-uv python uninstall --all 2>&1 | indent
+uv python uninstall --all 2>&1 | indent || echo "Failed to uninstall uv-managed Python versions..."
