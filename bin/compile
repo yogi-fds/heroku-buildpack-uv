@@ -21,11 +21,6 @@ export UV_CACHE_DIR="$CACHE_DIR"
 # https://devcenter.heroku.com/articles/buildpack-api#caching
 mkdir -p "$CACHE_DIR"
 
-REQUIREMENTS_FILE="requirements.txt"
-REQUIREMENTS_TEST_FILE="requirements-test.txt"
-RUNTIME_FILE="runtime.txt"
-VENV=".venv"
-
 shopt -s nullglob
 
 # Run the rest of the script from the build directory
@@ -55,11 +50,13 @@ source "$HOME/.cargo/env"
 log "Install uv Python version"
 uv python install 2>&1 | indent
 
-log "Export $REQUIREMENTS_FILE from uv"
-uv export --output-file "$REQUIREMENTS_FILE" --no-dev --no-emit-project --frozen 2>&1 | indent
+log "Export requirements.txt from uv"
+uv export --output-file requirements.txt --no-dev --no-emit-project --frozen 2>&1 | indent
 
-log "Export $REQUIREMENTS_TEST_FILE from uv (for Heroku CI)"
-uv export --output-file "$REQUIREMENTS_TEST_FILE" --no-emit-project --frozen 2>&1 | indent
+log "Export requirements-test.txt from uv (for Heroku CI)"
+uv export --output-file requirements-test.txt --no-emit-project --frozen 2>&1 | indent
+
+RUNTIME_FILE="runtime.txt"
 
 if [ -f "$RUNTIME_FILE" ] ; then
     log "$RUNTIME_FILE found, skipping $RUNTIME_FILE generation" >&2
