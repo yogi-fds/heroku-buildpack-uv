@@ -43,7 +43,7 @@ log "Install uv"
 curl -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" | sh 2>&1 | indent
 
 # Make the uv commands available
-source "$HOME/.cargo/env"
+source "$HOME/.local/bin/env"
 
 # Install a Python version with uv so we get more
 # recent releases by default
