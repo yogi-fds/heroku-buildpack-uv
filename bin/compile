@@ -50,11 +50,21 @@ source "$HOME/.local/bin/env"
 log "Install uv Python version"
 uv python install 2>&1 | indent
 
-log "Export requirements.txt from uv"
-uv export --output-file requirements.txt --no-dev --no-emit-project --frozen "${UV_EXPORT_OPTIONS:-}" 2>&1 | indent
+if [ -z "${UV_EXPORT_OPTIONS:-}" ] ; then
+    log "Export requirements.txt from uv"
+    uv export --output-file requirements.txt --no-dev --no-emit-project --frozen 2>&1 | indent
+else
+    log "Export requirements.txt from uv (with $UV_EXPORT_OPTIONS)"
+    uv export --output-file requirements.txt --no-dev --no-emit-project --frozen "$UV_EXPORT_OPTIONS" 2>&1 | indent
+fi
 
-log "Export requirements-test.txt from uv (for Heroku CI)"
-uv export --output-file requirements-test.txt --no-emit-project --frozen "${UV_EXPORT_OPTIONS:-}" 2>&1 | indent
+if [ -z "${UV_EXPORT_OPTIONS:-}" ] ; then
+    log "Export requirements-test.txt from uv (for Heroku CI)"
+    uv export --output-file requirements-test.txt --no-emit-project --frozen 2>&1 | indent
+else
+    log "Export requirements-test.txt from uv (for Heroku CI, with $UV_EXPORT_OPTIONS)"
+    uv export --output-file requirements-test.txt --no-emit-project --frozen "$UV_EXPORT_OPTIONS" 2>&1 | indent
+fi
 
 RUNTIME_FILE="runtime.txt"
 
