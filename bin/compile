@@ -69,11 +69,14 @@ RUNTIME_FILE="runtime.txt"
 if [ -f "$RUNTIME_FILE" ] ; then
     log "$RUNTIME_FILE found, skipping $RUNTIME_FILE generation" >&2
     exit 0
+elif [ -f .python-version ]; then 
+    log ".python-version found, skipping .python-version generation" >&2
+    exit 0
 else
-    log "Generating $RUNTIME_FILE from uv Python version"
+    log "Generating .python-version from uv Python version"
     PYTHON_VERSION_OUTPUT=$(uv run python --version)
-    echo "${PYTHON_VERSION_OUTPUT//Python /python-}" > "$RUNTIME_FILE"
-    cat "$RUNTIME_FILE" | indent
+    echo "${PYTHON_VERSION_OUTPUT//Python /}" > .python-version
+    cat .python-version | indent
 fi
 
 log "Uninstalling uv-managed Python versions"
