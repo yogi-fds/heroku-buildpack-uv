@@ -64,7 +64,7 @@ else
     echo "$UV_EXPORT_OPTIONS" | xargs uv export --output-file requirements-test.txt --no-emit-project --frozen 2>&1 | indent
 fi
 
-if [ -f "runtime.txt" ] ; then
+if [ -f runtime.txt ] ; then
     log "runtime.txt found, skipping runtime.txt generation" >&2
     exit 0
 elif [ -f .python-version ]; then 
