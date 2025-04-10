@@ -50,24 +50,33 @@ source "$HOME/.local/bin/env"
 log "Install uv Python version"
 uv python install 2>&1 | indent
 
+# Custom index URL
+CUSTOM_INDEX="--extra-index-url https://artifactory.factset.com/artifactory/api/pypi/python/simple"
+CUSTOM_INDEX_LINE="--extra-index-url https://artifactory.factset.com/artifactory/api/pypi/python/simple"
+log "Using custom index URL as extra: https://artifactory.factset.com/artifactory/api/pypi/python/simple"
+
 if [ -z "${UV_EXPORT_OPTIONS:-}" ] ; then
     log "Export requirements.txt from uv"
-    uv export --output-file requirements.txt --no-dev --no-emit-project --frozen 2>&1 | indent
+    uv export $CUSTOM_INDEX --output-file requirements.txt --no-dev --no-emit-project --frozen 2>&1 | indent
+    sed -i "1s/^/$CUSTOM_INDEX_LINE\n/" requirements.txt
 
     log "Export requirements-test.txt from uv (for Heroku CI)"
-    uv export --output-file requirements-test.txt --no-emit-project --frozen 2>&1 | indent
+    uv export $CUSTOM_INDEX --output-file requirements-test.txt --no-emit-project --frozen 2>&1 | indent
+    sed -i "1s/^/$CUSTOM_INDEX_LINE\n/" requirements-test.txt
 else
     log "Export requirements.txt from uv (with $UV_EXPORT_OPTIONS)"
-    echo "$UV_EXPORT_OPTIONS" | xargs uv export --output-file requirements.txt --no-dev --no-emit-project --frozen 2>&1 | indent
+    echo "$UV_EXPORT_OPTIONS" | xargs uv export $CUSTOM_INDEX --output-file requirements.txt --no-dev --no-emit-project --frozen 2>&1 | indent
+    sed -i "1s/^/$CUSTOM_INDEX_LINE\n/" requirements.txt
 
     log "Export requirements-test.txt from uv (for Heroku CI, with $UV_EXPORT_OPTIONS)"
-    echo "$UV_EXPORT_OPTIONS" | xargs uv export --output-file requirements-test.txt --no-emit-project --frozen 2>&1 | indent
+    echo "$UV_EXPORT_OPTIONS" | xargs uv export $CUSTOM_INDEX --output-file requirements-test.txt --no-emit-project --frozen 2>&1 | indent
+    sed -i "1s/^/$CUSTOM_INDEX_LINE\n/" requirements-test.txt
 fi
 
 if [ -f runtime.txt ] ; then
     log "runtime.txt found, skipping runtime.txt generation" >&2
     exit 0
-elif [ -f .python-version ]; then 
+elif [ -f .python-version ]; then
     log ".python-version found, skipping .python-version generation" >&2
     exit 0
 else
